@@ -24,6 +24,7 @@ param sqlServerName string = ''
 param sqlDatabaseName string = ''
 param webServiceName string = ''
 param apimServiceName string = ''
+param azureTags string = ''
 
 @description('Flag to use Azure API Management to mediate the calls between the Web frontend and the backend API')
 param useAPIM bool = false
@@ -41,7 +42,8 @@ param appUserPassword string
 
 var abbrs = loadJsonContent('./abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
-var tags = { 'azd-env-name': environmentName }
+var azdTag = { 'azd-env-name': environmentName }
+var tags = union(empty(azureTags) ? {} : base64ToJson(azureTags), azdTag)
 
 // Organize resources in a resource group
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
